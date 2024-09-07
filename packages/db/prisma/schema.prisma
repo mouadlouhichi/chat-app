@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id                String  @id @db.VarChar(32)
+  userId            String  @db.VarChar(32)
+  type              String  @db.VarChar(191)
+  provider          String  @db.VarChar(191)
+  providerAccountId String  @db.VarChar(191)
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String? @db.VarChar(30)
+  scope             String? @db.VarChar(191)
+  id_token          String?
+  session_state     String? @db.VarChar(191)
+  user              User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model DirectMessageInfo {
+  channel_id String         @db.VarChar(32)
+  user_id    String         @db.VarChar(191)
+  to_user_id String         @db.VarChar(191)
+  open       Boolean        @default(true)
+  user       User           @relation("UserDirectMessages", fields: [user_id], references: [id])
+  to_user    User           @relation("ToUserDirectMessages", fields: [to_user_id], references: [id])
+  channel    MessageChannel @relation(fields: [channel_id], references: [id])
+
+  @@id([user_id, to_user_id])
+  @@index([channel_id])
+}
+
+enum ChannelType {
+  DM
+  GROUP
+}
+
+model MessageChannel {
+  id              String               @id @db.VarChar(32)
+  type            ChannelType
+  group_id        String?              @db.VarChar(32)
+  last_message_id Int?
+  group           Group?               @relation("GroupChannel")
+  messages        Message[]
+  directMessages  DirectMessageInfo[]
+}
+
+model Group {
+  id          String         @id @db.VarChar(32)
+  name        String         @db.VarChar(256)
+  unique_name String         @unique @db.VarChar(32)
+  icon_hash   Int?
+  banner_hash Int?
+  channel_id  String         @unique @db.VarChar(32)
+  owner_id    String         @db.VarChar(191)
+  public      Boolean        @default(false)
+  owner       User           @relation("OwnedGroups", fields: [owner_id], references: [id])
+  channel     MessageChannel @relation("GroupChannel", fields: [channel_id], references: [id])
+  members     Member[]
+  invites     GroupInvite[]
+
+  @@index([channel_id])
+}
+
+model GroupInvite {
+  group_id String @db.VarChar(32)
+  code     String @id @db.VarChar(191)
+  group    Group  @relation(fields: [group_id], references: [id])
+
+  @@index([group_id])
+}
+
+model Member {
+  group_id String  @db.VarChar(32)
+  user_id  String  @db.VarChar(191)
+  admin    Boolean @default(false) @map("is_admin")
+  group    Group   @relation(fields: [group_id], references: [id])
+  user     User    @relation(fields: [user_id], references: [id])
+
+  @@id([group_id, user_id])
+  @@index([group_id])
+  @@index([user_id])
+}
+
+model Message {
+  id            Int            @id @default(autoincrement())
+  author_id     String         @db.VarChar(191)
+  channel_id    String         @db.VarChar(32)
+  content       String         @db.VarChar(2000)
+  timestamp     DateTime       @default(now()) @db.Timestamptz
+  attachment_id String?        @db.VarChar(32)
+  embeds        Json?
+  reply_id      Int?
+  author        User           @relation(fields: [author_id], references: [id])
+  channel       MessageChannel @relation(fields: [channel_id], references: [id])
+  attachment    Attachment?    @relation(fields: [attachment_id], references: [id])
+  reply_to      Message?       @relation("ReplyTo", fields: [reply_id], references: [id])
+  replies       Message[]      @relation("ReplyTo")
+
+  @@index([channel_id])
+  @@index([timestamp])
+}
+
+model Session {
+  id           String   @id @db.VarChar(191)
+  sessionToken String   @unique @db.VarChar(191)
+  userId       String   @db.VarChar(191)
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model User {
+  id                     String               @id @db.VarChar(191)
+  name                   String               @default("User") @db.VarChar(191)
+  email                  String?              @unique @db.VarChar(191)
+  emailVerified          DateTime?
+  image                  String?              @db.VarChar(191)
+  banner_hash            Int?
+  is_ai                  Boolean              @default(false)
+  accounts               Account[]
+  sessions               Session[]
+  messages               Message[]
+  ownedGroups            Group[]              @relation("OwnedGroups")
+  memberships            Member[]
+  sentDirectMessages     DirectMessageInfo[]  @relation("UserDirectMessages")
+  receivedDirectMessages DirectMessageInfo[]  @relation("ToUserDirectMessages")
+  createdEmotes          Emote[]
+}
+
+model Emote {
+  id        String   @id @db.VarChar(256)
+  name      String   @db.VarChar(256)
+  creatorId String   @map("creator_id") @db.VarChar(191)
+  timestamp DateTime @default(now()) @db.Timestamptz
+  hash      String?  @db.VarChar(191)
+  creator   User     @relation(fields: [creatorId], references: [id])
+}
+
+enum AttachmentType {
+  image
+  video
+  raw
+}
+
+model Attachment {
+  id       String         @id @db.VarChar(32)
+  name     String         @db.VarChar(255)
+  url      String         @db.VarChar(255)
+  type     AttachmentType?
+  bytes    Int
+  width    Int?
+  height   Int?
+  messages Message[]
+}

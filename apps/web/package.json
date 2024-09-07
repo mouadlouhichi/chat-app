@@ -1,0 +1,55 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "^18.x"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@inworld/nodejs-sdk": "1.14.2",
+    "@tanstack/react-query": "^4.18.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/next": "^10.45.2",
+    "@trpc/react-query": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "ably": "^2.3.1",
+    "cloudinary": "^2.4.0",
+    "clsx": "^2.1.1",
+    "db": "workspace:*",
+    "drizzle-orm": "^0.33.0",
+    "highlight.js": "^11.10.0",
+    "katex": "^0.16.11",
+    "lucide-react": "^0.427.0",
+    "marked": "^6.0.0",
+    "marked-react": "^2.0.0",
+    "next": "14.2.5",
+    "next-auth": "^4.24.7",
+    "next-themes": "^0.3.0",
+    "react": "18.3.1",
+    "react-cropper": "^2.3.3",
+    "react-dom": "18.3.1",
+    "react-hook-form": "^7.52.2",
+    "react-infinite-scroll-hook": "^4.1.1",
+    "server": "workspace:*",
+    "shared": "workspace:*",
+    "tailwind-variants": "^0.2.1",
+    "ui": "workspace:*",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/node": "18.11.18",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "config": "workspace:*",
+    "typescript": "^5.5.4"
+  }
+}
