@@ -13,7 +13,7 @@ import { prisma } from "db/client";
 
 export interface GroupWithNotifications extends Group {
     last_message: { content: string } | null;
-    channel_id: any;
+    channel_id: string;
     member: {
         admin: boolean;
     };
