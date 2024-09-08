@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "ui/components/button";
 import { Cropper, ReactCropperElement } from "react-cropper";

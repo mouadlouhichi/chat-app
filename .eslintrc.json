@@ -1,16 +1,7 @@
 {
-  "extends": [
-
-  ],
-  "parser": "@typescript-eslint/parser",
-  "root": true,
-
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "parserOptions": {
-        "project": ["./tsconfig.json"]
-      }
+  "parserOptions": {
+    "babelOptions": {
+      "presets": ["./apps/web/node_modules/next/babel"]
     }
-  ]
+  }
 }
