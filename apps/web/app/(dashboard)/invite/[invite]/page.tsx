@@ -1,5 +1,5 @@
 import { Avatar } from "ui/components/avatar";
-import { Group, PrismaClient } from "db";
+import { Group } from "db";
 
 import { groupIcon } from "shared/media/format";
 import { notFound } from "next/navigation";
